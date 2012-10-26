@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="container">
+        <div class="well">
+        <h1>Register for ContextMiner</h1>
+        <form action="{{url_for('register')}}" method="post">
+	    <div class="control-group {{"error" if "first_name" in errs}}">
+		<div class="controls">
+		    <input placeholder="First name" type="text" name="first_name" />
+		    {% if "first_name" in errs %}
+		    <span class="help-inline">{{errs['first_name']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+	    <div class="control-group {{"error" if "last_name" in errs}}">
+		<div class="controls">
+		    <input placeholder="Last name" type="text" name="last_name" />
+		    {% if "last_name" in errs %}
+		    <span class="help-inline">{{errs['last_name']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+	    <div class="control-group {{"error" if "email" in errs}}">
+		<div class="controls">
+		    <input id="inputError" placeholder="Email" type="text" name="email">
+		    {% if "email" in errs %}
+		    <span class="help-inline">{{errs['email']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+	    <div class="control-group {{"error" if "username" in errs}}">
+		<div class="controls">
+		    <input placeholder="Username" type="text" name="username" />
+		    {% if "username" in errs %}
+		    <span class="help-inline">{{errs['username']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+	    <div class="control-group {{"error" if "passwd" in errs}}">
+		<div class="controls">
+		    <input placeholder="Password" type="password" name="passwd" />
+		    {% if "passwd" in errs %}
+		    <span class="help-inline">{{errs['passwd']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+	    <div class="control-group {{"error" if "passwd2" in errs}}">
+		<div class="controls">
+		    <input placeholder="Retype password" type="password" name="passwd2" />
+		    {% if "passwd2" in errs %}
+		    <span class="help-inline">{{errs['passwd2']}}</span>
+		    {% endif %}
+		</div>
+	    </div>
+            <p><input class="btn btn-success" type="submit" value="Register" />
+        </form>
+	<p>Or <a href="{{url_for('index')}}">log in</a> if you already have an account.</p>
+    </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            {{message}}
+        {% endfor %}
+    {% endwith %}
+{% endblock %}

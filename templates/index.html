@@ -1,0 +1,25 @@
+{% extends "session.html" %}
+{% block body %}
+<div class="container">
+    <div class="row-fuild">
+	<ul class="thumbnails">
+	    <li class="span6">
+		<button class="thumbnail span6">
+		    <h1><a href="{{url_for('index')}}">Data</a></h1>
+		    <div class="caption">
+			View data mined by campaigns
+		    </div>
+		</button>
+	    </li>
+	    <li class="span6">
+		<div class="thumbnail">
+		    <h1><a href="{{url_for('index')}}">Campaigns</a></h1>
+		    <div class="caption">
+			Create, view, and modify campaigns
+		    </div>
+		</div>
+	    </li>
+	</ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "session.html" %}
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="/static/css/campaigns.css" />
+{% endblock %}
+{% block body %}
+    <div class="container">
+	<div class="page-header">
+	    <h1>{{campaign['title']|capitalize}}</h1>
+	</div>
+	<h2>Description</h2>
+	<p class="lead">{{campaign['description']}}</p>
+	<h2>Actions</h2>
+	    <form action="{{url_for('campaigns', action='delete')}}" method="post">
+		<input type="hidden" name="cid" value="{{campaign['cid']}}" />
+		<input class="btn btn-danger" type="submit" value="Delete"/>
+	    </form>
+	<h2>Tasks</h2>
+	<table class="table table-hover table-bordered">
+	    <thead>
+		<th>Source</th>
+		<th>Query</th>
+		<th>Attributes</th>
+		<th>Frequency</th>
+	    </thead>
+	    <tbody>
+	    {% for task in campaign['tasks'] %}
+		<tr>
+		    <td>{{task['name']|capitalize}}</td>
+		    <td>{{task['query']}}</td>
+		    <td>
+			{% for attr in task['attributes'] %}
+			<span class="label label-info">{{attr|capitalize}}</span>
+			{% endfor %}
+		    </td>
+		    <td>{{task['frequency']|capitalize}}</td>
+		</tr>
+	    {% endfor %}
+	    </tbody>
+	</table>
+	<h2>Data</h2>
+	<table class="table table-hover table-bordered">
+	    <thead>
+		<th>Date</th>
+		<th>Source</th>
+		<th>Query</th>
+		<th>Data</th>
+	    </thead>
+	    <tbody>
+	    {% for d in data %}
+		<tr>
+		    <td>{{d['date']}}</td>
+		    <td>{{d['source']}}</td>
+		    <td>{{d['query']}}</td>
+		    <td>{{d['data']}}</td>
+		</tr>
+	    {% endfor %}
+	    </tbody>
+	</table>
+    </div>
+{% endblock %}
