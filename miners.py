@@ -7,6 +7,9 @@ class MinerNotFound(MinerError): pass
 sourcedir = './sources/'
 
 def _load_miner(source):
+    """
+    Given the filename of the source, loads and returns the miner 
+    """
     try:
 	return imp.load_source(source, sourcedir+source+".py")
     except IOError:
@@ -47,7 +50,10 @@ def all_miner_info():
     miners = list_miners()
     res = {}
     for m in miners:
-	res[m] = get_attrs(m)
+	miner = _load_miner(m)
+	attrs = miner.list_attrs()
+	name = miner.name()
+	res[name] = attrs
     return res
 
 
