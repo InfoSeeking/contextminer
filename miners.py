@@ -43,16 +43,22 @@ def get_attrs(source):
     miner = _load_miner(source)
     return miner.list_attrs()
 
-def all_miner_info():
+def all_miner_info(human_readable=False):
     """
     Convenience function to list all miners and their attributes
+    if human_readable == True, then keys are human readable names of miners,
+    else, keys are machine readable names of miners.
     """
     miners = list_miners()
+    print miners
     res = {}
     for m in miners:
 	miner = _load_miner(m)
 	attrs = miner.list_attrs()
-	name = miner.name()
+	if human_readable:
+	    name = miner.name()
+	else:
+	    name = m
 	res[name] = attrs
     return res
 
