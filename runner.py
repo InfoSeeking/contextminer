@@ -2,11 +2,31 @@ import datetime
 from gevent import monkey; monkey.patch_all()
 from gevent import Greenlet
 import gevent
+try:
+    import simplejson as json
+except ImportError:
+    import json 
 import db
 import miners
 
 db_host = 'localhost'
 db_port = 27017
+
+def fix_keys(obj):
+    """
+    Full traversal of dict obj that removes '$' from keys for insertion into 
+    mongodb.
+    """
+    if isinstance(obj, dict):
+	keys = obj.keys()
+	for key in keys:
+	    if isinstance(obj[key], dict):
+		fix_keys(obj[key])
+	    elif isinstance(obj[key], list):
+		obj[key] = map(fix_keys, obj[key])
+	    if key.find('$') != -1:
+		obj[key.replace('$', '')] = obj.pop(key)
+    return obj 
 
 class Runner(Greenlet):
     
@@ -35,9 +55,11 @@ class Runner(Greenlet):
 	exec_time = datetime.datetime.now()
 	res = miners.mine(task['source'], task['query'], 
 			     attrs=task['attributes'], since=task['last_run'])
+	res = map(fix_keys, res)
 	print res
-	self.db.insert_data(datetime.datetime.now(), task['source'], 
-		    task['query'], res)
+	for data in res:
+	    self.db.insert_data(datetime.datetime.now(), task['source'], 
+			task['query'], data)
 	# update last run time for task
 	self.db.conn.contextminer.tasks.update({'_id': task['_id']},
 		{'$set': {'last_run': exec_time}})
