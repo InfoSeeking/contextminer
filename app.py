@@ -13,6 +13,7 @@ except ImportError:
     import json
 
 import miners
+import jinja_filters
 
 app = flask.Flask(__name__)
 app.secret_key = 'pineapple'
@@ -21,6 +22,9 @@ db_host = 'localhost'
 db_port = 27017
 
 logging.basicConfig(level=logging.DEBUG)
+
+# setup custom filters
+app.jinja_env.filters['humanize'] = jinja_filters.humanize
 
 def with_db(method):
     @functools.wraps(method)
@@ -163,7 +167,7 @@ class Index(MethodView):
 	if 'user' not in flask.session:
 	    return flask.redirect(flask.url_for('login'))
 	else:
-	    return flask.redirect(flask.url_for('campaigns'))
+	    return flask.render_template('index.html')
 
 class Collector(MethodView):
     decorators = [with_db, return_json]
@@ -198,19 +202,31 @@ class Collector(MethodView):
 class Campaigns(MethodView):
     decorators = [with_db, session]
 
-    def get(self, action=None, cid=-1):
+    def get(self, action=None, cid=-1, source=None):
 	if action == 'create':
-	    return flask.render_template("create_campaign.html", sources=miners.all_miner_info())
-	if cid != -1:
+	    return flask.render_template("create_campaign.html", 
+			 sources=miners.all_miner_info())
+	elif cid != -1 and not source: # a campaign view is requested
 	    campaign = flask.g.db.get_campaign(flask.session.get('user'), cid)
 	    if not campaign:
 		flask.abort(404)
-	    print campaign
 	    tasks = flask.g.db.get_tasks(campaign['_id'])
 	    data = flask.g.db.get_data(tasks)
-	    return flask.render_template("campaign.html", campaign=campaign, data=data)
-	campaigns = flask.g.db.list_campaigns(flask.session.get('user'))
-	return flask.render_template("campaigns.html", campaigns=campaigns)
+	    return flask.render_template("campaign.html", campaign=campaign, 
+					 data=data)
+	elif cid != -1 and source: # data from source of campaign is requested
+	    campaign = flask.g.db.get_campaign(flask.session.get('user'), cid)
+	    if not campaign:
+		flask.abort(404)
+	    task = flask.g.db.get_campaign_task(source, campaign['_id'])
+	    if not task:
+		flask.abort(404)
+	    data = flask.g.db.get_data([task])
+	    return flask.render_template(source+".html", campaign=campaign, 
+					 data=data)
+	else:
+	    campaigns = flask.g.db.list_campaigns(flask.session.get('user'))
+	    return flask.render_template("campaigns.html", campaigns=campaigns)
 
     def post(self, action):
 	print flask.request.form
@@ -226,7 +242,7 @@ class Campaigns(MethodView):
 	Deletes a campaign
 	"""
 	cid = int(float(flask.request.form.get('cid')))
-	if not cid:
+	if not isinstance(cid, (int, long)):
 	    return flask.abort(503)
 	flask.g.db.delete_campaign(cid)
 	return flask.redirect(flask.url_for('campaigns'))
@@ -237,6 +253,7 @@ class Campaigns(MethodView):
 	Title and query are strings.
 	"""
 	sources = miners.all_miner_info()
+	print sources
 	campaign_req = set(['title'])
 	missing = {}
 	params = {}
@@ -254,6 +271,7 @@ class Campaigns(MethodView):
 	source_req = set(['query', 'frequency'])
 	for source in sources:
 	    fields = [x.split('_', 1)[1] for x in flask.request.form if x.split('_')[0] == source] 
+	    print fields
 	    for r in source_req:
 		if not r in fields:
 		    missing[source+'_'+r] = 'Required'
@@ -264,9 +282,11 @@ class Campaigns(MethodView):
 	    for attr in attrs:
 		if attr not in sources[source]:
 		    attrs.remove(attr)
-	    tasks.append({'name': source, 'query': flask.request.form.get(source+'_query'),
-		'frequency': flask.request.form.get(source+'_frequency'),
-		'attributes': attrs})
+
+	    if flask.request.form.get(source+'_query') != '': # only create task if query not null
+		tasks.append({'name': source, 'query': flask.request.form.get(source+'_query'),
+		    'frequency': flask.request.form.get(source+'_frequency'),
+		    'attributes': attrs})
 
 	desc = flask.request.form.get('description', '')
 	flask.g.db.create_campaign(flask.session.get('user'), params['title'], tasks, description=desc)
@@ -316,6 +336,10 @@ app.add_url_rule('/campaigns/<string:action>/<float:cid>/',
 		methods=['POST'])
 
 app.add_url_rule('/campaigns/<int:cid>/',
+	    	view_func=Campaigns.as_view('campaigns'),
+		methods=['GET',])
+
+app.add_url_rule('/campaigns/<int:cid>/<string:source>',
 	    	view_func=Campaigns.as_view('campaigns'),
 		methods=['GET',])
 
