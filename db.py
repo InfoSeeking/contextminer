@@ -47,12 +47,23 @@ class Database(object):
 	else:
 	    return cur.next()
 
-    def get_task(self, id):
-	cur = self.conn.contextminer.tasks.find({'_id': id})
-	if cur.count() <= 0:
-	    return None
-	else:
-	    return cur.next()
+    def get_campaign_task(self, source, _id):
+	"""
+	Given a source name and the _id of a campaign, returns a task embedded
+	document from the appropiate campaign or None if no task found
+	"""
+	campaign = self.conn.contextminer.campaigns.find_one({'_id': _id})
+	for task in campaign['tasks']:
+	    if task['name'] == source:
+		return task
+	return None
+
+    def get_task(self, _id):
+	"""
+	Given the objectid of a task object, returns matching document from 
+	tasks collection
+	"""
+	return self.conn.contextminer.tasks.find_one({'_id': _id})
 
     def get_tasks(self, _id):
 	"""
@@ -132,14 +143,12 @@ class Database(object):
 						    'source': task['name']})
 	    for e in cur:
 		result.append(e) 
-
 	return result
 
     def get_sources(self, _id):
 	"""
 	Returns a list of all the sources this campaign is mining
 	"""
-	print _id
 	campaign = self.conn.contextminer.campaigns.find_one({'_id': _id})
 	sources = []
 	for task in campaign['tasks']:
@@ -155,7 +164,6 @@ class Database(object):
 	object. data is free-form JSON data inside a string. If source is not a
 	valid source returns False, else inserts data and returns True.
 	"""
-	print "I'm inserting data"
 	self.conn.contextminer.data.insert({'date': date, 
 					    'source': source, 
 					    'query': query,
