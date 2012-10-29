@@ -25,7 +25,8 @@
 	    <tbody>
 	    {% for task in campaign['tasks'] %}
 		<tr>
-		    <td>{{task['name']|capitalize}}</td>
+	    
+		    <td><a href="{{url_for('campaigns', cid=campaign['cid'], source=task['name'])}}">{{task['name']|humanize|capitalize}}</a></td>
 		    <td>{{task['query']}}</td>
 		    <td>
 			{% for attr in task['attributes'] %}
@@ -33,25 +34,6 @@
 			{% endfor %}
 		    </td>
 		    <td>{{task['frequency']|capitalize}}</td>
-		</tr>
-	    {% endfor %}
-	    </tbody>
-	</table>
-	<h2>Data</h2>
-	<table class="table table-hover table-bordered">
-	    <thead>
-		<th>Date</th>
-		<th>Source</th>
-		<th>Query</th>
-		<th>Data</th>
-	    </thead>
-	    <tbody>
-	    {% for d in data %}
-		<tr>
-		    <td>{{d['date']}}</td>
-		    <td>{{d['source']}}</td>
-		    <td>{{d['query']}}</td>
-		    <td>{{d['data']}}</td>
 		</tr>
 	    {% endfor %}
 	    </tbody>
