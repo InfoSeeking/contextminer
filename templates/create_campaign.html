@@ -22,7 +22,7 @@
 	    {% for source in sources %}
 		<div class="control-group">
 		    <div class="controls">
-			<h3>{{source|capitalize}}</h3>
+			<h3>{{source|humanize|capitalize}}</h3>
 		    </div>
 		</div>
 		<div class="control-group">
@@ -64,51 +64,6 @@
 		    </div>
 		</div>
 	    {% endfor %}
-	    <div class="control-group">
-		<div class="controls">
-		    <h3>Youtube</h3>
-		</div>
-	    </div>
-	    <div class="control-group">
-		<label class="control-label" for="youtube_query">Query</label>
-		<div class="controls">
-		    <input id="query" class="input-xxlarge" type="text" placeholder="Query">
-		    <span class="help-block">Phrase used to search this site</span>
-		</div>
-	    </div>
-	    <div class="control-group">
-		<label class="control-label" for="attributes">Attributes</label>
-		<div class="controls">
-		    <label class="checkbox inline">
-			<input type="checkbox" name="youtube_likes" value="likes"> Likes
-		    </label>
-		    <label class="checkbox inline">
-			<input type="checkbox" value="youtube_dislikes"> Dislikes
-		    </label>
-		    <label class="checkbox inline">
-			<input type="checkbox" value="youtube_comments"> Comments
-		    </label>
-		    <span class="help-block">Items to collect</span>
-		</div>
-	    </div>
-	    <div class="control-group">
-		<label class="control-label" for="frequency">Frequency</label>
-		<div class="controls">
-		    <label class="radio">
-			<input type="radio" name="youtube_frequency" value="daily">
-			Daily
-		    </label>
-		    <label class="radio">
-			<input type="radio" name="youtube_frequency" value="monthly">
-			Monthly
-		    </label>
-		    <label class="radio">
-			<input type="radio" name="youtube_frequency" value="yearly">
-			Yearly
-		    </label>
-		    <span class="help-block">How often to collect from this site</span>
-		</div>
-	    </div>
 	    <div class="form-actions">
 		<button type="submit" class="btn btn-primary">Create campaign</button>
 		<button type="button" class="btn">Cancel</button>
