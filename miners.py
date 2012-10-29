@@ -43,6 +43,13 @@ def get_attrs(source):
     miner = _load_miner(source)
     return miner.list_attrs()
 
+def get_name(source):
+    """
+    Returns the human readable name of a given source
+    """
+    miner =  _load_miner(source)
+    return miner.name()
+
 def all_miner_info(human_readable=False):
     """
     Convenience function to list all miners and their attributes
