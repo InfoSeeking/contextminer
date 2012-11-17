@@ -1,0 +1,43 @@
+{% extends "session.html" %}
+
+{% block styles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+	<div class="page-header">
+	    <h1>Youtube Insight Data</h1>
+	    {% if data %}
+	    <a href="?fmt=csv" class="btn">Export to CSV</a>
+	    {% endif %}
+	</div>
+	{% if not data %} 
+	<h2>No data yet!</h2>
+	{% else %}
+	    {% for d in data %}
+	    <table class="table table-hover table-bordered">
+		{% set insights = d.get('data')|format_insights %}
+		<thead>
+		    <th>Attribute</th>
+		    <th>Count</th>
+		    <th>History</th>
+		</thead>
+		<tbody>
+		    {% for key in insights %}
+			{% if 'count' in insights[key] %}
+			<tr>
+			    <td>{{key|capitalize}}</td>
+			    <td>{{insights[key]['count']|capitalize}}</td>
+			    <td><img src="{{insights[key]['chart']}}" alt='' /></td>
+			</tr>
+			{% endif %}
+		    {% endfor %}
+		</tbody>
+	    </table>
+	    {% endfor %}
+	{% endif %}
+    </div>
+{% endblock %}
