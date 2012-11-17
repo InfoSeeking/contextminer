@@ -5,6 +5,8 @@ import functools
 import logging
 import math
 import time
+import zipfile
+import io
 from flask.views import View, MethodView
 from db import Database, DatabaseError
 try:
@@ -25,6 +27,26 @@ logging.basicConfig(level=logging.DEBUG)
 
 # setup custom filters
 app.jinja_env.filters['humanize'] = jinja_filters.humanize
+app.jinja_env.filters['format_insights'] = jinja_filters.format_insights
+
+# decorators {{
+def csv(method):
+    @functools.wraps(method)
+    def wrapper(*args, **kwargs):
+	logging.debug("I'm returning csv!")
+	response = flask.make_response(method(*args, **kwargs))
+	response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+	return response
+    return wrapper
+
+def zip(method):
+    @functools.wraps(method)
+    def wrapper(*args, **kwargs):
+	logging.debug("I'm returning a zip!")
+	response = flask.make_response(method(*args, **kwargs))
+	response.headers['Content-Type'] = 'application/zip' 
+	return response
+    return wrapper
 
 def with_db(method):
     @functools.wraps(method)
@@ -57,13 +79,14 @@ def admin(method):
 	return flask.abort(404)
     return wrapper
 
-def return_json(method):
+def json(method):
     @functools.wraps(method)
     def wrapper(*args, **kwargs):
 	logging.debug("I'm returning json!")
 	result = method(*args, **kwargs)
 	return json.dumps(result)
     return wrapper
+# }}
 
 def milli_to_dt(mt):
     """
@@ -170,7 +193,7 @@ class Index(MethodView):
 	    return flask.render_template('index.html')
 
 class Collector(MethodView):
-    decorators = [with_db, return_json]
+    decorators = [with_db, json]
 
     def get(self, point):
 	print(point)
@@ -222,11 +245,52 @@ class Campaigns(MethodView):
 	    if not task:
 		flask.abort(404)
 	    data = flask.g.db.get_data([task])
-	    return flask.render_template(source+".html", campaign=campaign, 
-					 data=data)
+	    # hack to return csv data
+	    if flask.request.args.get('fmt') is not None:
+		return self.fmt(source, data)
+	    else:
+		return flask.render_template(source+".html", campaign=campaign, 
+					     data=data)
 	else:
 	    campaigns = flask.g.db.list_campaigns(flask.session.get('user'))
 	    return flask.render_template("campaigns.html", campaigns=campaigns)
+    
+    def fmt(self, source, data):
+	fmt = flask.request.args.get('fmt')
+	if fmt == 'csv':
+	    miner = miners._load_miner(source)
+	    result = miner.to_csv(data)
+	    if len(result) > 1:
+		return self.zip_response(result)
+	    else:
+		return self.csv_response(result)
+	elif fmt == 'json':
+	    return self.json_response(data)
+	else:
+	    return data
+
+    @csv
+    def csv_response(self, data):
+	return data[0][1]
+
+    @json
+    def json_response(self, data):
+	return data
+
+    @zip
+    def zip_response(self, files):
+	"""
+	Expects a list of tuples with the first element as the filename and 
+	the second element as the string that represent the file. Zips up all
+	the files and returns a zip file response
+	"""
+	zipstream = io.BytesIO()
+	zfile = zipfile.ZipFile(file=zipstream, mode='w')
+	for f in files:
+	    zfile.writestr(f[0], f[1])
+	zfile.close()
+	zipstream.seek(0)
+	return zipstream.getvalue()
 
     def post(self, action):
 	print flask.request.form

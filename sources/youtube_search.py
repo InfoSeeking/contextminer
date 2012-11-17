@@ -1,3 +1,5 @@
+import csv
+import io
 import urllib2
 import urllib
 import urlparse
@@ -40,6 +42,26 @@ def list_attrs():
     Returns a list of attributes that this miner can mine
     """
     return []
+
+def to_csv(data):
+    result = io.BytesIO()
+    writer = csv.writer(result)
+    writer.writerow(['Title', 'Author', 'Published', 'Category', 
+		     'Description', 'Video'])
+    for d in data:
+	if 'mediagroup' in d['data']:
+	    description = d['data'].get('mediagroup').get('mediadescription').get('t').encode('ascii', 'backslashreplace')
+	else:
+	    description = ''
+
+	writer.writerow([d['data']['title']['t'].encode('ascii', 'backslashreplace'), 
+			', '.join([a['name']['t'] for a in d['data']['author']]), 
+			d['data']['published']['t'],
+			', '.join([c['label'] for c in d['data']['category'] if 'label' in c]),
+			description,
+			d['data']['content']['src'].encode('ascii', 'backslashreplace')])
+
+    return [('youtube_search', result.getvalue())]
 
 def search(**kwargs):
     """
