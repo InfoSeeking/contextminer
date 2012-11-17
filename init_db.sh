@@ -6,8 +6,8 @@ killall mongos
 echo Erasing data folder
 rm -rf ./data
 
-mkdir data
-touch data/log
+mkdir ./data
+touch ./data/log
 echo $(pwd)
 
 mongod --rest --dbpath data --logpath data/log --fork

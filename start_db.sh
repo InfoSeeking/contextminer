@@ -1,4 +1,4 @@
 #!/bin/bash
 
-mongod --rest --dbpath data --logpath data/log --fork
+mongod --rest --dbpath ./data --logpath ./data/log --fork
 
