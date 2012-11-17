@@ -55,11 +55,15 @@ class Runner(Greenlet):
 	exec_time = datetime.datetime.now()
 	res = miners.mine(task['source'], task['query'], 
 			     attrs=task['attributes'], since=task['last_run'])
-	res = map(fix_keys, res)
-	print res
-	for data in res:
-	    self.db.insert_data(datetime.datetime.now(), task['source'], 
-			task['query'], data)
+
+	if isinstance(res, list): 
+	    res = map(fix_keys, res)
+	    for data in res:
+		self.db.insert_data(datetime.datetime.now(), task['source'], 
+			    task['query'], data)
+	else:
+	    self.db.insert_data(datetime.datetime.now(), task['source'],
+				task['query'], res)
 	# update last run time for task
 	self.db.conn.contextminer.tasks.update({'_id': task['_id']},
 		{'$set': {'last_run': exec_time}})
