@@ -192,12 +192,12 @@ class Database(object):
 		    query={'cid': cid}, remove=True)['value']
 
 	tasks = self.conn.contextminer.command('findandmodify', 'tasks', 
-		    query={'campaigns': campaign['_id']}, 
-		    update={'$pull': {'campaigns': campaign['_id']} })['value']
+		    query={'campaign': campaign['_id']}, 
+		    update={'$pull': {'campaign': campaign['_id']} })['value']
 
 	# remove task if campaigns array is empty
 	self.conn.contextminer.command('findandmodify', 'tasks',
-		    query={'campaigns': {'$size': 0}},
+		    query={'campaign': {'$size': 0}},
 		    remove=True)
 
 	# may need to remove jobs later. 
