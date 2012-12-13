@@ -1,0 +1,13 @@
+table {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+th.big {
+    width: 30.5%;   
+}
+th.small {
+    width: 10%;
+}
+th.medium {
+    width: 30%;
+}
