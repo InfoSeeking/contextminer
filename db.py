@@ -135,12 +135,15 @@ class Database(object):
 
     def get_data(self, tasks):
 	"""
-	Returns all the data gathered for the given tasks
+	Returns all the data gathered for the given tasks sorted by date
 	"""
 	result = []
 	for task in tasks:
-	    cur = self.conn.contextminer.data.find({'query': task['query'], 
-						    'source': task['name']})
+	    cur = self.conn.contextminer.data.find({
+		'query': task['query'], 
+		'source': task['name']}
+		).sort('data', 1)
+
 	    for e in cur:
 		result.append(e) 
 	return result
