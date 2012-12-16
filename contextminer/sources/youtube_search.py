@@ -94,7 +94,6 @@ def run(query, attrs=[], since=None):
     objects as it can. since can be any date accepted by PHP's strtotime. 
     """
     objs = search(q=query, orderby="published", alt="json", v=2, time="today")
-    print objs
     return objs
 
 if __name__ == "__name__":

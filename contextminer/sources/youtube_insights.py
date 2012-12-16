@@ -138,7 +138,6 @@ def insights(video_id):
     """
     url = _make_url('/insight_ajax', action_get_statistics_and_data=1,v=video_id)
     result = _request(url)
-    print result
     return _strip_xml(result)
 
 def run(video_id, attrs=[], since=None):
@@ -148,7 +147,6 @@ def run(video_id, attrs=[], since=None):
     objects as it can. since can be any date accepted by PHP's strtotime. 
     """
     objs = insights(video_id)
-    print objs
     return objs
 
 if __name__ == "__name__":
