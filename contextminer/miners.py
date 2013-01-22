@@ -10,10 +10,18 @@ def _load_miner(source):
     """
     Given the filename of the source, loads and returns the miner 
     """
-    try:
-	return imp.load_source(source, sourcedir+source+".py")
-    except IOError:
+    package = 'contextminer.sources'
+    try: 
+	return getattr(__import__(package, fromlist=[str(source)]), source)
+    except ValueError as e:
+	print e
 	raise MinerNotFound("A miner could not be found for %s" % source)
+
+#    try:
+#	return imp.load_source(source, sourcedir+source+".py")
+#    except IOError:
+#	raise MinerNotFound("A miner could not be found for %s" % source)
+#
 
 def miner_exists(source):
     """
@@ -68,7 +76,6 @@ def all_miner_info(human_readable=False):
 	    name = m
 	res[name] = attrs
     return res
-
 
 def mine(source, query, since=None, attrs=[]):
     """

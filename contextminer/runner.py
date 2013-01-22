@@ -1,5 +1,5 @@
+import sys
 import datetime
-from gevent import monkey; monkey.patch_all()
 from gevent import Greenlet
 import gevent
 try:

@@ -2,6 +2,8 @@ import datetime
 import hashlib
 import flask
 import functools
+import gevent
+from gevent.pywsgi import WSGIServer
 import logging
 import math
 import time
@@ -423,8 +425,11 @@ app.add_url_rule('/collector/<path:point>', view_func=collector_view,
 		methods=['GET',])
 
 def main():
-    app.debug = True
-    app.run()
+    server = WSGIServer(('0.0.0.0', 5000), app)
+    try:
+	server.serve_forever()
+    except KeyboardInterrupt:
+	gevent.shutdown()
 
 if __name__=='__main__':
     main()
