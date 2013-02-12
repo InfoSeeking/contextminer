@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/session.css" />
+{% block styles %}{% endblock %}
+{% endblock %}
+
+{% block nav %}
+
+{% block navbar %}{% endblock %}
+
+<form class="navbar-form pull-right link" method="post" action="{{url_for('logout')}}">
+    <div class="navbar-text ">
+            Logged in as 
+            <a href="#">{{session.get('user')}}</a>
+            |
+            <input class="button logout" type="submit" value="Logout" name="logout"/>
+            {# <a href="#">Logout</a> #}
+    </div>
+</form>
+{% endblock %}

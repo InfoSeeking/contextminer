@@ -1,0 +1,12 @@
+div.top_alerts > div.alert {
+    margin: 2px auto;
+}
+
+input.logout {
+    margin: 0;
+    padding: 0;
+    font: normal normal normal 1em/1.25 Arial, Helvetica, sans-serif;
+    color: rgb(0,136,204);
+    background: none;
+    border: 0;
+}

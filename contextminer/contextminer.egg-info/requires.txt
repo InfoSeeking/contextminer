@@ -1,0 +1,5 @@
+flask
+pymongo
+beautifulsoup4
+gevent
+supervisor

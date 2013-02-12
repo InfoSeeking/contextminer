@@ -1,0 +1,19 @@
+{% extends "session.html" %}
+{% block body %}
+<div class="container">
+    <div class="row-fuild">
+	<ul class="thumbnails">
+	    <li class="span6">
+		<button class="thumbnail span6">
+		    <h1><a href="{{url_for('campaigns')}}">View Campaigns</a></h1>
+		</button>
+	    </li>
+	    <li class="span6">
+		<button class="thumbnail span6">
+		    <h1><a href="{{url_for('campaigns', action="create")}}">Create a Campaign</a></h1>
+		</button>
+	    </li>
+	</ul>
+    </div>
+</div>
+{% endblock %}

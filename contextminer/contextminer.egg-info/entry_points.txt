@@ -1,0 +1,7 @@
+[console_scripts]
+cmstop = contextminer.control:stop
+cmweb = contextminer.app:main
+cminit = contextminer.control:init
+cmminer = contextminer.runner:main
+cmstart = contextminer.control:start
+

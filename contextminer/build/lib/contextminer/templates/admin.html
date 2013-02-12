@@ -1,0 +1,7 @@
+{% extends "session.html" %}
+{% block navbar %}
+    <ul class="nav">
+	<li class="{{"active" if active == "users"}}"><a href="{{url_for('users')}}">Users</a></li>
+	<li class="{{"active" if active == "sources"}}"><a href="{{url_for('sources')}}">Sources</a></li>
+    </ul>
+{% endblock %}

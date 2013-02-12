@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="container">
+        <div class="well">
+        <h1>Sign in to ContextMiner</h1>
+	<form action="{{url_for('login')}}" method="post">
+	    <div class="control-group">
+		<div class="controls">
+		    <input placeholder="Username" type="text" name="username" />
+		</div>
+	    </div>
+	    <div class="control-group">
+		<div class="controls">
+		    <input placeholder="Password" type="password" name="passwd" />
+		</div>
+	    </div>
+	    <input class="btn btn-success" type="submit" value="Sign in" />
+	</form>
+	<p>Or <a href="{{url_for('register')}}">register</a> if do not have an account.</p>
+    </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            {{message}}
+        {% endfor %}
+    {% endwith %}
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "session.html" %}
+{% block body %}
+    <div class="container">
+	<div class="page-header">
+	    <h1>Create a Campaign</h1>
+	</div>
+	<form class="form-horizontal" action="{{url_for('campaigns', action="create")}}" method="post">
+	    <h2>Campaign info</h2>
+	    <div class="control-group">
+		<label class="control-label" for="name">Campaign Name</label>
+		<div class="controls">
+		    <input id="name" class="input-xlarge" type="text" name="title" placeholder="Campaign Name">
+		</div>
+	    </div>
+	    <div class="control-group">
+		<label class="control-label" for="description">Description</label>
+		<div class="controls">
+		    <textarea id="description" name="description" rows="3"></textarea>
+		</div>
+	    </div>
+	    <h2>Sources <small>Sites for this campaign to mine</small></h2>
+	    {% for source in sources %}
+		<div class="control-group">
+		    <div class="controls">
+			<h3>{{source|humanize|capitalize}}</h3>
+		    </div>
+		</div>
+		<div class="control-group">
+		    <label class="control-label" for="query">Query</label>
+		    <div class="controls">
+			<input id="query" name="{{source}}_query" class="input-xxlarge" type="text" placeholder="Query">
+			<span class="help-block">Phrase used to search this site</span>
+		    </div>
+		</div>
+		{% if sources[source] %}
+		    <div class="control-group">
+			<label class="control-label" for="attributes">Attributes</label>
+			<div class="controls">
+			    {% for attr in sources[source] %}
+			    <label class="checkbox inline">
+				<input type="checkbox" name="{{source}}_{{attr}}" value="true"> {{attr|capitalize}}
+			    </label>
+			    {% endfor %}
+			    <span class="help-block">Items to collect</span>
+			</div>
+		    </div>
+		{% endif %}
+		<div class="control-group">
+		    <label class="control-label" for="frequency">Frequency</label>
+		    <div class="controls">
+			<label class="radio">
+			    <input type="radio" name="{{source}}_frequency" value="daily">
+			    Daily
+			</label>
+			<label class="radio">
+			    <input type="radio" name="{{source}}_frequency" value="monthly">
+			    Monthly
+			</label>
+			<label class="radio">
+			    <input type="radio" name="{{source}}_frequency" value="yearly">
+			    Yearly
+			</label>
+			<span class="help-block">How often to collect from this site</span>
+		    </div>
+		</div>
+	    {% endfor %}
+	    <div class="form-actions">
+		<button type="submit" class="btn btn-primary">Create campaign</button>
+		<button type="button" class="btn">Cancel</button>
+	    </div>
+	</form>
+    </div>
+{% endblock %}

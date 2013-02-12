@@ -1,0 +1,5 @@
+include contextminer/supervisor/*
+include contextminer/templates/*
+include contextminer/static/js/*
+include contextminer/static/css/*
+include contextminer/static/img/*

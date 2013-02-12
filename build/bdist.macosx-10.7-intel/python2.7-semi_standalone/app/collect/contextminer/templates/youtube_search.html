@@ -1,0 +1,54 @@
+{% extends "session.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="/static/css/data.css" />
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/js/data.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+	<div class="page-header">
+	    <h1>Youtube Search Data</h1>
+	    <a href="?fmt=csv" class="btn">Export to CSV</a>
+	</div>
+	<table class="table table-hover table-bordered">
+	    <thead>
+		<th>Title</th>
+		<th>Author</th>
+		<th>Published</th>
+		<th class="small">Category</th>
+		<th class="medium">Description</th>
+		<th class="big">Video</th>
+	    </thead>
+	    <tbody>
+		{% for d in data %}
+		<tr>
+		    <td>{{d['data']['title']['t']}}</td>
+		    <td>
+			{% for author in d['data']['author'] %}
+			<a href="https://www.youtube.com/channel/{{author['ytuserId']['t']}}">{{author['name']['t']}}</a>
+			{% endfor %}
+		    </td>
+		    <td>{{d['data']['published']['t']}}</td>
+		    {% for category in d['data']['category'] %}
+			{% if category.get('label', None) %}
+			    <td>{{category['label']}}</td>
+			{% endif %}
+		    {% endfor %}
+		    {% if d['data'].get('mediagroup') %}
+			<td>{{d['data'].get('mediagroup').get('mediadescription').get('t')}}</td>
+		    {% else %}
+			<td></td>
+		    {% endif %}
+		    <td>
+			<a class="embed" href="#" data-url="{{d['data']['content']['src']}}">Show</a>
+		    </td>
+		</tr>
+		{% endfor %}
+	    </tbody>
+	</table>
+    </div>
+{% endblock %}
