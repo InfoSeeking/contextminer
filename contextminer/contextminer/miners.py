@@ -1,10 +1,23 @@
 import imp
 import os
+import logging
+import pkg_resources
 
 class MinerError(Exception): pass
 class MinerNotFound(MinerError): pass
 
 sourcedir = './sources/'
+
+logging.basicConfig(level=logging.DEBUG)
+
+def get_source_dir():
+    """
+    Returns the real sources directory
+    """
+    return pkg_resources.resource_filename(
+	    'contextminer',
+	    'sources'
+    )
 
 def _load_miner(source):
     """
@@ -14,7 +27,7 @@ def _load_miner(source):
     try: 
 	return getattr(__import__(package, fromlist=[str(source)]), source)
     except ValueError as e:
-	print e
+	logging.debug(e)
 	raise MinerNotFound("A miner could not be found for %s" % source)
 
 #    try:
@@ -38,7 +51,8 @@ def list_miners():
     Returns a list of all miners
     """
     miners = []
-    for f in os.listdir(sourcedir):
+    logging.debug(get_source_dir())
+    for f in os.listdir(get_source_dir()):
 	name = f.split('.')
 	if name[0] != '__init__' and name[-1] == 'py':
 	    miners.append(name[0])
@@ -65,7 +79,7 @@ def all_miner_info(human_readable=False):
     else, keys are machine readable names of miners.
     """
     miners = list_miners()
-    print miners
+    logging.debug(miners)
     res = {}
     for m in miners:
 	miner = _load_miner(m)

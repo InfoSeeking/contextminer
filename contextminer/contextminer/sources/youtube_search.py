@@ -1,5 +1,6 @@
 import csv
 import io
+import logging
 import urllib2
 import urllib
 import urlparse
@@ -10,6 +11,7 @@ except ImportError:
 import urllib
 
 base_url = "https://gdata.youtube.com/"
+logging.basicConfig(level=logging.DEBUG)
 
 def _make_url(endpoint, **kwargs):
     url = '%s?%s' % (
@@ -71,11 +73,16 @@ def search(**kwargs):
     result = []
     url = _make_url('/feeds/api/videos', **kwargs)
     for i in range(10):
-	print "url: " + url
+	logging.debug("url: " + url)
 	res = _request(url)
 	if not res:
 	    break
-	result.extend(res['feed']['entry'])
+	#logging.debug(res)
+	if not 'entry' in res['feed']:
+	    break
+	else:
+	    result.extend(res['feed']['entry'])
+
 	# find the next url
 	nurl = ''
 	for link in res['feed']['link']:

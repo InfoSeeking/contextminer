@@ -1,5 +1,8 @@
 import datetime
 from pymongo import Connection
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 class DatabaseError(Exception):
     pass

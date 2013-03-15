@@ -23,7 +23,8 @@ setup(name='contextminer',
 	    'templates/*', 
 	    'static/css/*',
 	    'static/js/*',
-	    'static/img/*'
+	    'static/img/*',
+	    'sources/*'
 	]
       },
       entry_points={
